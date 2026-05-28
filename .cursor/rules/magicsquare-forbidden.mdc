@@ -1,0 +1,20 @@
+---
+description: Forbidden patterns and safer alternatives
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Forbidden Patterns
+
+## Do Not Introduce
+- `print()` debugging in production code.
+- Bare `except:` clauses.
+- Hardcoded magic numbers or strings for domain rules.
+- Implementation-first changes that skip TDD red verification.
+- Test weakening by deletion, bypass, or over-broad mocking.
+
+## Prefer Instead
+- Use `logging` with appropriate log levels.
+- Catch explicit exceptions and re-raise or map to domain errors.
+- Move constants into named constants, config objects, or enums.
+- Start from failing tests and keep test intent intact through changes.

@@ -1,0 +1,17 @@
+---
+description: Python coding style and typing standards
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python Code Style
+
+## Required
+- Follow PEP 8 with a practical max line length of 88.
+- Add type hints for all function parameters and return values.
+- Add Google-style docstrings for public functions, methods, and classes.
+
+## Implementation Preferences
+- Use meaningful names instead of short abbreviations.
+- Favor small, composable functions over long procedural blocks.
+- Keep side effects explicit at function boundaries.
