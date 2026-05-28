@@ -1,0 +1,24 @@
+---
+description: TDD cycle and pytest testing discipline
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# TDD and Testing Rules
+
+## Red
+- Write or update a failing test before production code changes.
+- Confirm failure is caused by missing behavior, not a broken test.
+
+## Green
+- Implement only the minimum code needed to pass the new failing test.
+- Do not weaken, skip, or delete tests to force a pass.
+
+## Refactor
+- Refactor only after green, without changing external behavior.
+- Re-run related tests after each meaningful refactor step.
+
+## Pytest Conventions
+- Use `pytest` and keep tests in Arrange-Act-Assert flow.
+- Name every test function with the `test_` prefix.
+- Prefer `function` fixture scope unless broader scope is clearly justified.
