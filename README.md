@@ -1,5 +1,7 @@
 # Magic Square 4×4 — TDD Practice
 
+**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [RED Start Checklist](#7-red-start-checklist)
+
 ## 1. Project Start Declaration
 
 본 프로젝트는 **PRD 기반 Dual-Track TDD**로 Magic Square 4×4를 구현하는 학습형 연습이다.  
@@ -185,6 +187,45 @@ RED 사이클 시작 전 아래 **11항목**을 확인한다.
 - [ ] **10.** Open Questions **DN-01~03** 인지 (envelope, Control 필수 여부, both-fail fixture)
 - [ ] **11.** 첫 RED 대상 선정 — 권장: **`RED-BND-002`** (4×4 아님) Test Skeleton → pytest → RED 실패 확인
 
+**다음 단계:** 아래 [RED 단계 To-Do 리스트](#red-단계-to-do-리스트)에서 테스트 작성 진행 상황을 체크합니다.
+
+---
+
+## RED 단계 To-Do 리스트
+
+<!-- GitHub Task List: 저장소 README를 GitHub에서 열면 체크박스를 클릭해 [x]로 바꿀 수 있습니다. -->
+
+이 체크리스트는 [`docs/test_plan.md`](docs/test_plan.md) 기반입니다. **RED**(실패 테스트 작성) 완료 시 항목을 체크합니다.
+
+| 사용 환경 | 체크 방법 |
+|---|---|
+| **GitHub** (권장) | 저장소에서 `README.md` 열기 → 체크박스 클릭 → 변경 사항 커밋 |
+| **Cursor / VS Code** | 미리보기 또는 편집기에서 `- [ ]`를 `- [x]`로 직접 수정 후 저장 |
+
+### Track A — UI / Boundary 테스트
+- [ ] TC-A-01: grid=None 입력 → 실패 결과 반환 (Happy Path of Failure)
+- [ ] TC-A-02: code가 정확히 "INVALID_SIZE" 문자열인지 검증
+- [ ] TC-A-03: message가 "Grid must be 4x4." 와 문자 단위 동일한지 검증
+- [ ] TC-A-04: grid=None 시 Domain 진입점 0회 호출 (mock/spy 검증)
+- [ ] TC-A-05: grid=[] 빈 리스트 → 실패 결과 반환
+- [ ] TC-A-06: grid=3×4 크기 불일치 → 실패 결과 반환
+- [ ] TC-A-07: 반환 객체 타입이 지정 실패 결과 구조체인지 검증
+
+### Track B — Domain / Logic 테스트
+- [ ] TC-B-01: resolve()가 None grid를 직접 받지 않음을 격리 검증
+- [ ] TC-B-02: Boundary가 None 분기를 처리 후 resolve() 미호출 확인
+- [ ] TC-B-03: resolve() mock이 호출됐을 경우 테스트 실패 처리
+- [ ] TC-B-04: AC-FR-01-02~05 범위의 케이스는 이 커밋에 포함하지 않음 확인
+
+### 커버리지 목표
+- [ ] Domain Logic: 95%+ (pip install pytest-cov)
+- [ ] Boundary Layer: 85%+
+- [ ] 전체 TOTAL: 90%+
+
+### 결함 목록 연결
+- [x] defect_list.md 생성 및 발견 결함 기록
+- [x] 모든 결함 수정 후 회귀 테스트 통과 확인
+
 ---
 
 ## 8. Quality Gates
@@ -205,13 +246,17 @@ RED 사이클 시작 전 아래 **11항목**을 확인한다.
 | 문서 | 경로 | 역할 |
 |---|---|---|
 | PRD | [`docs/PRD_MagicSquare.md`](docs/PRD_MagicSquare.md) | FR/BR, 계약, Dual-Track, Test Plan, Traceability |
+| Test Plan (RED) | [`docs/test_plan.md`](docs/test_plan.md) | AC-FR-01-01, 경계값·mock 전략, 커버리지 gate |
 | 문제 정의 | [`Report/01.4x4_MagicSquare_Problem_Definition_Report.md`](Report/01.4x4_MagicSquare_Problem_Definition_Report.md) | 문제 인식·불변식 프레이밍 |
 | TDD 설계 | [`Report/02.4x4_MagicSquare_TDD_Design_Report.md`](Report/02.4x4_MagicSquare_TDD_Design_Report.md) | Invariant, I/O Contract, RED 우선 테스트 설계 |
 | Cursor Rules 구현 | [`Report/03.4x4_MagicSquare_CursorRules_UserEntity_Implementation_Report.md`](Report/03.4x4_MagicSquare_CursorRules_UserEntity_Implementation_Report.md) | ECB 샘플, pytest/AAA, coverage |
 | Scenario 검증 | [`Report/06.MagicSquare_Level1-5_Scenario_Verification_Report.md`](Report/06.MagicSquare_Level1-5_Scenario_Verification_Report.md) | Level 1~5 Scenario ID 백로그 |
 | TDD 시작 준비 | [`Report/08.MagicSquare_TDD_Startup_ToDo_README_Report.md`](Report/08.MagicSquare_TDD_Startup_ToDo_README_Report.md) | To-Do List·README 준비 보고서 |
+| AC-FR-01-01 RED→GREEN | [`Report/09.MagicSquare_AC_FR_01_01_RED_GREEN_Report.md`](Report/09.MagicSquare_AC_FR_01_01_RED_GREEN_Report.md) | SIZE 검증 테스트·구현·결함 보고서 |
+| 결함 목록 | [`defect_list.md`](defect_list.md) | DEF-001~005 (Resolved) |
 | Cursor Rules | [`.cursor/rules/`](.cursor/rules/) | Quality Gates, ECB, TDD, forbidden |
-| Transcript | [`Prompting/08.MagicSquare_TDD_Startup_Transcript.md`](Prompting/08.MagicSquare_TDD_Startup_Transcript.md) | TDD 시작 준비 세션 기록 |
+| Transcript (시작 준비) | [`Prompting/08.MagicSquare_TDD_Startup_Transcript.md`](Prompting/08.MagicSquare_TDD_Startup_Transcript.md) | TDD 시작 준비 세션 기록 |
+| Transcript (AC-FR-01-01) | [`Prompting/09.MagicSquare_AC_FR_01_01_Transcript.md`](Prompting/09.MagicSquare_AC_FR_01_01_Transcript.md) | AC-FR-01-01 RED→GREEN 세션 기록 |
 
 ### 문서 간 관계
 
@@ -235,10 +280,11 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 |---|---|
 | PRD | `docs/PRD_MagicSquare.md` v1.0 Draft — Implementation-Ready |
 | 개발 To-Do List | Turn 1 작성 완료 — **파일 미저장** (선택: `docs/TDD_Development_ToDo_List.md`) |
-| MagicSquare 구현 | **미시작** (`src/entity/user.py` ECB 샘플만 존재) |
-| MagicSquare 테스트 | **미시작** (`tests/entity/test_user.py` 샘플만 존재) |
-| `pyproject.toml` | **미작성** — RED 단계에서 추가 예정 |
-| 현재 단계 | **TDD RED 시작 직전** |
+| MagicSquare 구현 | **진행 중** — AC-FR-01-01 SIZE (`src/boundary`, `src/control`) |
+| MagicSquare 테스트 | **진행 중** — `tests/boundary/` 30건 GREEN + entity 샘플 5건 |
+| `defect_list.md` | DEF-001~005 기록, Open 0건 |
+| `pyproject.toml` | **미작성** — coverage gate 추가 예정 |
+| 현재 단계 | **AC-FR-01-01 GREEN 완료** — AC-FR-01-02~05 후속 RED |
 
 ### 권장 RED 시작 순서
 
