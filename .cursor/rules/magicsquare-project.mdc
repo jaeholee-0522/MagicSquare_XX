@@ -1,0 +1,21 @@
+---
+description: MagicSquare project context and baseline workflow
+alwaysApply: true
+---
+
+# MagicSquare Project Baseline
+
+## Project Intent
+- Build the 4x4 MagicSquare solution with ECB architecture and TDD.
+- Keep domain rules explicit in the entity layer.
+- Maintain reliable automated tests with pytest.
+
+## Repository Layout
+- Production code belongs in `src/`.
+- Tests belong in `tests/`.
+- Prefer parallel directory layout by layer: `boundary`, `control`, `entity`.
+
+## Working Behavior
+- Before coding, review existing tests and preserve their intent.
+- Identify the target ECB layer before introducing new logic.
+- After coding, run relevant pytest suites first, then broaden scope if needed.

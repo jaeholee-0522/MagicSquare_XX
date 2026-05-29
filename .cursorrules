@@ -1,0 +1,119 @@
+################################################################################
+project:
+  name: "MagicSquare"
+  python_version: "3.10+"
+  description: "4x4 MagicSquare 문제를 ECB 아키텍처와 TDD로 구현하는 프로젝트"
+  goals:
+    - "도메인 규칙을 entity 레이어에 명확히 캡슐화"
+    - "pytest 기반 신뢰 가능한 테스트 체계 유지"
+    - "레이어 경계와 타입 안정성 지속 보장"
+
+################################################################################
+code_style:
+  python_version: "3.10+"
+  style_guide: "PEP8 엄격 준수"
+  type_hints: "모든 함수 파라미터와 반환값에 필수"
+  docstring: "Google 스타일, 모든 public 메서드에 필수"
+  max_line_length: 88
+
+################################################################################
+architecture:
+  pattern: "ECB"
+  layers:
+    boundary: "외부 입출력 담당 (UI, API, CLI)"
+    control: "비즈니스 로직 담당"
+    entity: "도메인 데이터 및 규칙 담당"
+  dependency_direction:
+    - "boundary -> control 호출만 허용"
+    - "control -> entity 호출만 허용"
+    - "entity는 boundary/control에 의존 금지"
+    - "boundary가 entity를 직접 조작하는 경로 금지"
+
+################################################################################
+tdd_rules:
+  red_phase:
+    description: "요구사항을 검증하는 실패 테스트를 먼저 정의하는 단계"
+    rules:
+      - "새 기능/버그 수정 전 테스트를 먼저 작성한다."
+      - "실행 결과가 실패(RED)임을 확인하고 원인을 기록한다."
+      - "실패 원인이 테스트 오타가 아닌 요구사항 부재임을 검증한다."
+    must_not:
+      - "RED 확인 전에 프로덕션 코드를 작성하지 않는다."
+      - "RED를 만들기 위해 과도한 mocking으로 테스트 의미를 왜곡하지 않는다."
+  green_phase:
+    description: "실패 테스트를 통과시키는 최소 구현을 작성하는 단계"
+    rules:
+      - "테스트를 통과시키기 위한 최소 코드만 작성한다."
+      - "변경 범위는 RED 테스트를 GREEN으로 만드는 데 필요한 범위로 제한한다."
+      - "기존 테스트가 모두 통과하는지 즉시 확인한다."
+    must_not:
+      - "구조 개선 목적의 리팩터링을 수행하지 않는다."
+      - "테스트 약화(삭제/완화/우회)로 GREEN을 만들지 않는다."
+  refactor_phase:
+    description: "동작은 유지하고 코드 구조를 개선하는 단계"
+    rules:
+      - "외부 동작을 바꾸지 않고 가독성/중복/응집도를 개선한다."
+      - "리팩터링 후 전체 테스트를 다시 실행한다."
+      - "테스트 커버리지를 유지한다."
+    must_not:
+      - "새 기능을 추가하거나 기존 기능 동작을 변경하지 않는다."
+      - "테스트 커버리지를 떨어뜨리는 변경을 하지 않는다."
+
+################################################################################
+testing:
+  framework: "pytest"
+  pattern: "AAA (Arrange-Act-Assert)"
+  coverage_minimum: "80%"
+  fixture_scope:
+    rule: "기본은 function 스코프를 사용하고, 비용이 큰 공유 자원만 명시적 이유와 함께 module/session 사용"
+  naming_convention: "모든 테스트 함수는 test_ 접두사 필수"
+
+################################################################################
+forbidden:
+  print_debugging:
+    pattern: "print()"
+    reason: "디버깅 출력이 프로덕션 코드에 남아 노이즈와 품질 저하를 유발함"
+    alternative: "logging 모듈과 적절한 로그 레벨 사용"
+  hardcoded_constants:
+    pattern: "매직 넘버/문자열 하드코딩"
+    reason: "의미 전달이 약하고 변경 비용이 증가하며 도메인 규칙 추적이 어려움"
+    alternative: "entity의 상수/설정 객체/명시적 enum으로 분리"
+  bare_except:
+    pattern: "except:"
+    reason: "시스템 종료 예외까지 삼켜 장애 원인 분석과 복구를 어렵게 함"
+    alternative: "except Exception as e: 로 명시하고 로깅 후 재전파 또는 도메인 예외 변환"
+  implementation_without_red:
+    pattern: "RED 검증 없이 구현 시작"
+    reason: "TDD 사이클이 깨져 요구사항 추적성과 회귀 방지력이 약화됨"
+    alternative: "실패 테스트 작성 및 RED 확인 후 구현"
+  test_weakening:
+    pattern: "기존 테스트 삭제/완화/우회"
+    reason: "회귀 탐지 능력이 감소하고 품질 기준이 무너짐"
+    alternative: "테스트 의도를 유지하며 구현을 수정하거나 테스트를 강화"
+
+################################################################################
+file_structure:
+  root: "src/"
+  tests: "tests/"
+  ecb_layout_comment: |
+    # src/
+    #   boundary/    # UI, API, CLI 등 외부 입출력
+    #   control/     # 유스케이스, 오케스트레이션, 애플리케이션 서비스
+    #   entity/      # 도메인 모델, 규칙, 불변식
+    # tests/
+    #   boundary/
+    #   control/
+    #   entity/
+
+################################################################################
+ai_behavior:
+  before_coding:
+    - "코드 작성 전 관련 테스트 파일과 기존 테스트 의도를 먼저 확인한다."
+    - "변경 대상이 속한 ECB 레이어와 허용 의존 방향을 점검한다."
+  during_coding:
+    - "ECB 레이어 경계를 위반하는 참조/호출을 생성하지 않는다."
+    - "타입 힌트 없는 함수를 생성하지 않는다."
+    - "GREEN 단계에서는 최소 변경만 적용하고 리팩터링을 미룬다."
+  after_coding:
+    - "수정 범위와 관련된 pytest를 우선 실행해 회귀를 확인한다."
+    - "TDD 순서 위반 또는 RED 미확인 상태가 감지되면 경고를 출력한다."
