@@ -1,6 +1,6 @@
 # Magic Square 4×4 — TDD Practice
 
-**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) · [REFACTOR 유형·우선순위](#refactor-유형별-분류--우선순위) · [ECB 레이어 분리](#ecb-레이어-분리-프롬프트--src-매핑) · [QA 코드 스멜 (Control/Boundary)](#p2--qa-코드-스멜-controlboundary) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
+**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) · [REFACTOR 유형·우선순위](#refactor-유형별-분류--우선순위) · [REFACTOR Phase 0 게이트](#refactor-phase-0--진입-게이트) · [REFACTOR 통합 커밋 로드맵](#refactor-통합-커밋-로드맵-rf--r-l--r-u) · [ECB 레이어 분리](#ecb-레이어-분리-프롬프트--src-매핑) · [QA 코드 스멜 (Control/Boundary)](#p2--qa-코드-스멜-controlboundary) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
 
 ## 1. Project Start Declaration
 
@@ -447,6 +447,71 @@ pytest tests/test_architecture_imports.py -q
 | 2 | Boundary Layer coverage | 85%+ |
 | 3 | 전체 TOTAL coverage | 90%+ |
 
+##### REFACTOR Phase 0 — 진입 게이트
+
+Report/14 분석·통합 REFACTOR 프로그램 착수 **전** 아래 게이트를 충족한다. 미충족 시 Wave 1(커밋) 진행 금지.
+
+| 게이트 | 기준 | 검증 명령·산출물 |
+|:---:|---|---|
+| **G-01** | `pytest tests/` 전체 GREEN (Dual-Track RED 19건 해소 완료) | `pytest tests/ -v` |
+| **G-02** | Golden Master GM-1 matched | `pytest tests/test_golden_master_magic_square.py -m golden_master -v` |
+| **G-03** | U-FLOW-02(6), U-OUT-02~03, U-IN-06~08 GREEN | `tests/boundary/test_u_flow_domain_isolation.py`, `test_u_out_contract.py`, `test_u_in_validation.py` |
+| **G-04** | D-SOL-03 GREEN; SC-CTL-002~004 GREEN *(= RF-P1-01 Control mock 테스트와 동일 선행)* | `tests/entity/test_d_sol_solution.py`; `tests/control/test_solve_use_case.py` *(미착수)* |
+| **G-05** | *(P1·Wave 2 Screen 전)* `tests/boundary/test_main_window.py` 존재 | RF-P1-05 / RF-06 선행 |
+
+**현재 스냅샷 (Report/17 RPT-MS-017, Step 0 실측 2026-05-29):**
+
+| 항목 | 결과 |
+|------|------|
+| G-01~G-03·D-SOL-03 | **충족** — `pytest -q` **76 passed, 1 skipped** |
+| G-02 GM-1 | **충족** — `test_golden_master_magic_square.py` **6 passed** |
+| 커버리지 | 전역 **97.48%** · Domain **97.10%** · Boundary **96~98%** (gate PASS) |
+| **G-04** | SC-CTL·`tests/control/` **미착수** |
+| **G-05** | `test_main_window.py` **미착수** |
+
+상세: [`Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md`](Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md)
+
+##### REFACTOR 통합 커밋 로드맵 (RF / R-L / R-U)
+
+Report/14(P0 ECB·QA) + Entity/Boundary 후보(R-L/R-U)를 **단일 커밋 단위(프롬프트 A)** 로 실행한다.  
+기능 추가·계약 변경·출력 변경·architecture redesign **금지**. 매 커밋 후 **GM-1 matched** 필수.
+
+**고정 계약 (전 Phase 불변):** 4×4 int[][], 0=빈칸(정확히 2), int[6] 1-index, small-first→reverse fallback, E001~E007 envelope, GM 5시나리오.
+
+| Wave | 커밋 | ID | Track | 작업 | 검증 test ID |
+|:---:|---:|---|---|---|---|
+| **1** | C1 | RF-01 | Boundary | `ValidationErrorResponse` SSOT, `NotImplementedError`/stub 제거 *(P0 대부분 충족·감사)* | U-IN-*, U-FLOW-02 |
+| 1 | C2 | RF-02 | Boundary | E006 `ErrorMapper` *(E006 PRD 미정의 — Report/15)* | U-OUT-03, GM G3 |
+| 1 | C3 | RF-03 | Control | `SolutionResult`/`SolveResult.values` SSOT | SC-CTL-002~003, GM G1/G2 |
+| 1 | C4 | RF-04 | Control+Entity | locate/find 중복 정리 | SC-CTL-004, D-SOL-* |
+| **2** | C5 | RF-05 | Boundary | `_failure()` extract | U-IN-* |
+| 2 | C6 | RF-06 | Screen | `ResultPresenter` | `test_main_window` *(G-05)* |
+| 2 | C7 | RF-07 | Screen | G1 fixture·상수 SSOT | GM, Screen |
+| 2 | C8 | RF-08 | Screen | `_init_ui()` extract | Screen |
+| **3** | C9 | R-L3 | Entity | `MATRIX_SIZE`, magic constant 함수 | D-VAL-* |
+| 3 | C10 | R-L2 | Entity | sumRow/sumCol/sumDiag | D-VAL-* |
+| 3 | C11 | R-L1 | Entity | Coordinate VO 통일 | D-LOC-*, D-SOL-* |
+| 3 | C12 | R-L4 | Entity | `tryPlacement(order)` extract | D-SOL-* |
+| **4** | C13 | R-U2 | Boundary | Error code/message 상수화 | U-OUT-*, GM |
+| 4 | C14 | R-U3 | Boundary | `ResultFormatter` (1-index SSOT) | U-OUT-02, GM |
+
+**Golden Master 특별 규칙**
+
+- 매 커밋 후 `pytest -m golden_master -v` — diff 시 (a) 회귀→롤백 (b) 의도적 SSOT 통일→Report 근거 + `--approve-golden-master`
+- approve 없이 `tests/golden_master_expected.txt` 수정 금지
+- **C3(RF-03) ISS-012-01:** UseCase가 `list[int]`를 유지하면 GM 무변; 경계 타입만 변경 시 `serialize_result`·baseline 동기화 필요
+
+**금지:** Wave 1 미완료 시 Entity R-L* 선행 · 한 세션에 Wave 전체 구현 · RED 우회 · generic framework 신규 도입
+
+**Report/16 Wave와의 관계**
+
+| 문서 | Wave 초점 | 용도 |
+|---|---|---|
+| [Report/16](Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md) | P1 → P2-H → ECB P0 → P2-M/L | **유형·우선순위** SSOT |
+| [Report/17](Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md) | RF-01~14 커밋 14건 | **실행·게이트·GM** SSOT |
+
+*권장:* G-04 해소(`RF-P1-01` = SC-CTL-002~004) 후 Wave 1 C1 착수. Report/16 Wave 1(P1)과 병행 가능.
+
 ##### 권장 실행 Wave
 
 | Wave | 범위 | 항목 |
@@ -577,6 +642,7 @@ pytest tests/boundary/ tests/entity/ -q
 | REFACTOR P0 ECB·QA | [`Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md`](Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md) | contracts·bootstrap·QA 스멜·ECB 매핑 README |
 | QA Control/Boundary 스멜 | [`Report/15.MagicSquare_QA_Control_Boundary_Smell_Report.md`](Report/15.MagicSquare_QA_Control_Boundary_Smell_Report.md) | quality-assurance-engineer 점검·P2-H/M/L·회귀 버그 |
 | REFACTOR 유형·우선순위 | [`Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md`](Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md) | 미완료 REFACTOR 7유형·Wave 1~4·QA 매핑 |
+| REFACTOR Phase 0·통합 로드맵 | [`Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md`](Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md) | RPT-MS-017 · Phase 0 게이트·Step 0 실측·RF/R-L/R-U 14커밋·GM·위험 |
 | AC-FR-01-01 단일 GREEN 검증 | [`Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md`](Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md) | 단일 pytest GREEN 검증 |
 | 결함 목록 | [`docs/defect_list.md`](docs/defect_list.md) | DEF-001~005 (Resolved) |
 | Cursor Rules | [`.cursor/rules/`](.cursor/rules/) | Quality Gates, ECB, TDD, forbidden |
@@ -588,6 +654,7 @@ pytest tests/boundary/ tests/entity/ -q
 | Transcript (REFACTOR P0 ECB·QA) | [`Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md`](Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md) | ECB P0·code-review·QA·ECB README 세션 |
 | Transcript (QA Control/Boundary) | [`Prompt/15.MagicSquare_QA_Control_Boundary_Smell_Transcript.md`](Prompt/15.MagicSquare_QA_Control_Boundary_Smell_Transcript.md) | QA engineer 스멜 점검·README P2·Export 세션 |
 | Transcript (REFACTOR 유형·우선순위) | [`Prompt/16.MagicSquare_REFACTOR_Classification_Priority_Transcript.md`](Prompt/16.MagicSquare_REFACTOR_Classification_Priority_Transcript.md) | REFACTOR 분류·README·Report·Export 세션 |
+| Transcript (Phase 0·통합 로드맵) | [`Prompt/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Transcript.md`](Prompt/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Transcript.md) | Phase 0 게이트·RF-01~14·README·Export 세션 |
 | Transcript (AC-FR-01-01 단일 GREEN) | [`Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md`](Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md) | 단일 pytest GREEN 검증 세션 |
 
 ### 문서 간 관계
@@ -613,10 +680,11 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 | PRD | `docs/PRD_MagicSquare.md` v1.1 — DN-01~DN-03 resolved |
 | 개발 To-Do List | Turn 1 작성 완료 — **파일 미저장** (선택: `docs/TDD_Development_ToDo_List.md`) |
 | MagicSquare 구현 | **R0~R8 GREEN 완료** + ECB P0 (`contracts`, `ports`, `bootstrap`) |
-| MagicSquare 테스트 | **~76 PASS** — Dual-Track + Golden Master + architecture guard |
+| MagicSquare 테스트 | **76 passed, 1 skipped** — Dual-Track + GM-1 (6) + architecture guard *(Step 0)* |
+| 커버리지 | **97.48%** global · **97.10%** Domain · gate ≥80% PASS *(Step 0)* |
 | `docs/defect_list.md` | DEF-001~005 기록, Open 0건 |
 | `pyproject.toml` | pytest-cov gate (≥80%); GUI optional omit |
-| 현재 단계 | **REFACTOR** — Golden Master 구축 완료, P0 ECB·GUI 복원 완료 |
+| 현재 단계 | **REFACTOR** — P0·GM 완료; Phase 0 게이트 G-04·G-05 미충족; 통합 로드맵 RF-01~14 대기 ([Report/17](Report/17.MagicSquare_REFACTOR_Phase0_Integrated_Roadmap_Report.md)) |
 
 ### GREEN 순서 (완료)
 
@@ -644,4 +712,4 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 ## 한 줄 결론
 
 이 프로젝트의 본질은 **정답 1개 산출**이 아니라, **불변식과 계약으로 설명 가능한 코드**를 Dual-Track TDD로 만드는 것이다.  
-**R0~R8 GREEN 완료** — Dual-Track PASS, Golden Master 회귀 안전장치, REFACTOR P0(ECB·GUI) 적용. 다음: P1 테스트 보강 → **P2-H QA High**(int[6]·UI 가드) → 구조 REFACTOR.
+**R0~R8 GREEN 완료** — Dual-Track PASS, Golden Master 회귀 안전장치, REFACTOR P0(ECB·GUI) 적용. 다음: **Phase 0 G-04**(SC-CTL/`RF-P1-01`) → 통합 Wave 1 **RF-01~04** 또는 Report/16 **P1** 병행 → P2-H·ECB P0.
