@@ -452,6 +452,7 @@ pytest tests/boundary/ tests/entity/ -q
 | Dual-Track RED Skeleton | [`Report/10.MagicSquare_DualTrack_RED_Design_And_Skeleton_Report.md`](Report/10.MagicSquare_DualTrack_RED_Design_And_Skeleton_Report.md) | RED 설계표·스켈레톤 24건·Prompt 통합 |
 | Dual-Track Full GREEN R1~R8 | [`Report/12.MagicSquare_DualTrack_Full_GREEN_R1_R8_Report.md`](Report/12.MagicSquare_DualTrack_Full_GREEN_R1_R8_Report.md) | R1~R8 GREEN·PRD v1.1·coverage gate |
 | Golden Master GM-1~GM-3 | [`Report/13.MagicSquare_Golden_Master_GM1_GM3_Report.md`](Report/13.MagicSquare_Golden_Master_GM1_GM3_Report.md) | Golden Master baseline·approve·회귀 보호 |
+| REFACTOR P0 ECB·QA | [`Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md`](Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md) | contracts·bootstrap·QA 스멜·ECB 매핑 README |
 | AC-FR-01-01 단일 GREEN 검증 | [`Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md`](Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md) | 단일 pytest GREEN 검증 |
 | 결함 목록 | [`docs/defect_list.md`](docs/defect_list.md) | DEF-001~005 (Resolved) |
 | Cursor Rules | [`.cursor/rules/`](.cursor/rules/) | Quality Gates, ECB, TDD, forbidden |
@@ -460,6 +461,7 @@ pytest tests/boundary/ tests/entity/ -q
 | Transcript (Dual-Track RED) | [`Prompt/10.MagicSquare_DualTrack_RED_Design_And_Skeleton_Transcript.md`](Prompt/10.MagicSquare_DualTrack_RED_Design_And_Skeleton_Transcript.md) | RED 설계·스켈레톤·Prompt 통합 세션 |
 | Transcript (Full GREEN R1~R8) | [`Prompt/12.MagicSquare_DualTrack_Full_GREEN_R1_R8_Transcript.md`](Prompt/12.MagicSquare_DualTrack_Full_GREEN_R1_R8_Transcript.md) | R1~R8 GREEN·PRD v1.1 세션 |
 | Transcript (Golden Master GM-1~GM-3) | [`Prompt/13.MagicSquare_Golden_Master_GM1_GM3_Transcript.md`](Prompt/13.MagicSquare_Golden_Master_GM1_GM3_Transcript.md) | Golden Master baseline·테스트·README 세션 |
+| Transcript (REFACTOR P0 ECB·QA) | [`Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md`](Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md) | ECB P0·code-review·QA·ECB README 세션 |
 | Transcript (AC-FR-01-01 단일 GREEN) | [`Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md`](Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md) | 단일 pytest GREEN 검증 세션 |
 
 ### 문서 간 관계
