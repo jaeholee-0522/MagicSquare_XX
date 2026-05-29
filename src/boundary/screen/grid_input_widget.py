@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from src.entity.constants import BLANK_VALUE, GRID_SIZE, MAX_VALUE
+from src.contracts.grid_constants import BLANK_VALUE, GRID_SIZE, MAX_VALUE
 
 _DEFAULT_STYLE = ""
 _HIGHLIGHT_STYLE = (

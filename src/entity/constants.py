@@ -1,10 +1,21 @@
-"""Named domain and grid constants."""
+"""Named domain constants (re-exported from shared contracts)."""
 
 from __future__ import annotations
 
-GRID_SIZE: int = 4
-BLANK_VALUE: int = 0
-REQUIRED_BLANK_COUNT: int = 2
-MIN_VALUE: int = 1
-MAX_VALUE: int = 16
-MAGIC_CONSTANT: int = 34
+from src.contracts.grid_constants import (
+    BLANK_VALUE,
+    GRID_SIZE,
+    MAGIC_CONSTANT,
+    MAX_VALUE,
+    MIN_VALUE,
+    REQUIRED_BLANK_COUNT,
+)
+
+__all__ = [
+    "BLANK_VALUE",
+    "GRID_SIZE",
+    "MAGIC_CONSTANT",
+    "MAX_VALUE",
+    "MIN_VALUE",
+    "REQUIRED_BLANK_COUNT",
+]

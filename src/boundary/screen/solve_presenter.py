@@ -6,11 +6,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
-from src.boundary.boundary_validator import BoundaryValidator
-from src.boundary.contracts import ValidationErrorResponse
+from src.contracts.domain_errors import DomainErrorResponse
+from src.contracts.validation_errors import ValidationErrorResponse
 from src.control.solve_use_case import SolveUseCase
-from src.entity.domain_errors import DomainErrorResponse
-from src.entity.domain_resolver import DomainResolverImpl
 
 
 class SolveResultKind(str, Enum):
@@ -44,13 +42,8 @@ SolveOutcome = SuccessOutcome | ErrorOutcome
 class SolvePresenter:
     """Wires SolveUseCase and maps responses to UI-friendly outcomes."""
 
-    def __init__(self, use_case: SolveUseCase | None = None) -> None:
-        """Create presenter with optional injected use case (for testing)."""
-        if use_case is None:
-            use_case = SolveUseCase(
-                validator=BoundaryValidator(),
-                domain_resolver=DomainResolverImpl(),
-            )
+    def __init__(self, use_case: SolveUseCase) -> None:
+        """Create presenter with an injected use case."""
         self._use_case = use_case
 
     def solve(self, grid: list[list[int]]) -> SolveOutcome:

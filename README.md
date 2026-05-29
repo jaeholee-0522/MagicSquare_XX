@@ -1,17 +1,17 @@
 # Magic Square 4×4 — TDD Practice
 
-**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
+**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
 
 ## 1. Project Start Declaration
 
 본 프로젝트는 **PRD 기반 Dual-Track TDD**로 Magic Square 4×4를 구현하는 학습형 연습이다.  
-현재 단계는 **RED 단계 완료** — Track A/B Full RED 54건 + R0 GREEN 30건 작성·실패 확인 완료. **다음: GREEN (R1부터 순차 구현)**.
+현재 단계는 **GREEN 완료 (R0~R8)** — Dual-Track 62건 + Golden Master 6건 PASS. **다음: REFACTOR** (계약 불변, 구조 개선).
 
 | 용어 | 정의 |
 |---|---|
 | **RED** | 테스트 실패 상태를 **확인**하는 단계 (미구현으로 인한 기대 실패) |
 | **GREEN** | RED 실패를 통과시키기 위한 **최소 구현 작업 후보**만 기술 (본 README에서는 실행하지 않음) |
-| **REFACTOR** | GREEN 이후 **구조 개선 후보**만 기술 (실제 수행 없음) |
+| **REFACTOR** | GREEN 이후 **구조 개선** (외부 I/O 계약·Golden Master 불변) |
 
 **고정 TDD 흐름**
 
@@ -111,10 +111,12 @@ Scenario → Acceptance Criteria → RED Test ID → Test Skeleton
 ### 4.2 ECB Architecture
 
 - **Entity:** 도메인 규칙·불변식 (`BlankFinder`, `MagicSquareValidator`, `Solver` 등)
-- **Control:** 유스케이스 오케스트레이션 (DN-02: 필수 여부 미확정)
-- **Boundary:** 외부 I/O, 입력 검증, 결과 포맷 (`BoundaryValidator`, `ResultFormatter`)
+- **Control:** 유스케이스 오케스트레이션 (`SolveUseCase`, `src/control/ports.py`)
+- **Boundary:** 외부 I/O, 입력 검증, 결과 포맷 (`BoundaryValidator`, PyQt `screen/`)
+- **Contracts:** 레이어 공유 상수·오류 DTO (`src/contracts/`)
+- **Bootstrap:** composition root (`src/bootstrap.py`)
 
-**의존 방향:** `boundary → control → entity` (역방향 금지)
+**의존 방향:** `boundary → control → entity` (역방향 금지; 공유는 `contracts`만)
 
 ### 4.3 Traceability
 
@@ -187,7 +189,7 @@ RED 사이클 시작 전 아래 **11항목**을 확인한다.
 - [x] **10.** Open Questions **DN-01~03** 확정 (envelope, Control, G3 both-fail)
 - [x] **11.** Full RED 대상 작성 완료 — R0~R6 배치 (`test_ac_fr_01_01_*`, `test_u_*`, `test_d_*`) → pytest **25 failed, 37 passed** 확인
 
-**다음 단계:** REFACTOR 또는 GUI Boundary layer (`src/boundary/screen/`) — 계약 불변 유지.
+**다음 단계:** **REFACTOR** — § [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) P1 테스트 보강 후 레이어별 구조 개선 (계약·Golden Master 불변).
 
 ---
 
@@ -213,6 +215,56 @@ GREEN 완료 후 즉시 적용.
 - [x] GM-08: 1-index 출력 보호
 - [x] GM-09: reverse 조합 fallback 보호
 - [x] GM-10: Error Contract 보호
+
+### REFACTOR 단계 To-Do 리스트
+
+`.cursorrules` **refactor_phase** 기준: 외부 동작 불변 · 리팩터링 후 전체 pytest · coverage 유지(≥80%).  
+**RED 스켈레톤(`pytest.fail`) 0건** — 리팩토링 전 추가 GREEN 불필요.
+
+#### P0 — REFACTOR 전제 (구조·GUI)
+
+- [x] RF-P0-01: `src/contracts/` 공유 상수·오류 DTO 분리 (`grid_constants`, `validation_errors`, `domain_errors`)
+- [x] RF-P0-02: `src/control/ports.py` — `InputValidator` Protocol, `SolveResult` 타입
+- [x] RF-P0-03: `SolveUseCase` — Boundary 직접 import 제거 (Protocol 주입)
+- [x] RF-P0-04: `BoundaryValidator` — `entity.constants` 대신 `contracts` 사용
+- [x] RF-P0-05: `src/bootstrap.py` composition root (GUI·테스트 wiring)
+- [x] RF-P0-06: PyQt GUI 소스 복원 (`main_window`, `grid_input_widget`, `solve_presenter`, `sample_puzzles`)
+- [x] RF-P0-07: `tests/test_architecture_imports.py` — ECB import guard
+- [x] RF-P0-08: `tests/boundary/test_solve_presenter.py` — Presenter 5 시나리오
+- [x] RF-P0-09: `tests/boundary/test_gui_smoke.py` — GUI import smoke (PyQt6 optional)
+
+#### P1 — 테스트 보강 (REFACTOR 안전망)
+
+- [ ] RF-P1-01: `tests/control/test_solve_use_case.py` — mock validator/resolver 단위 테스트
+- [ ] RF-P1-02: Boundary 비정수 셀 검증 + 테스트 (`"5"`, `1.5` → `INVALID_RANGE`, `TypeError` 방지)
+- [ ] RF-P1-03: 입력 grid 불변성 테스트 (PRD NFR-04 — `execute` 전후 deep equality)
+- [ ] RF-P1-04: Golden Master — `INVALID_SIZE`, `INVALID_RANGE` 시나리오 추가
+- [ ] RF-P1-05: GUI 동작 테스트 (headless Qt) — Solve/Clear/샘플 로드/오류 표시
+- [ ] RF-P1-06: `integrated_solve_use_case` fixture 중복 제거 (`conftest.py` 단일 SSOT)
+
+#### P2 — 구조 REFACTOR (GREEN·GM 유지)
+
+- [ ] RF-P2-01: `DomainResolver` Protocol → `control/ports.py` 이동 검토
+- [ ] RF-P2-02: `SolveUseCase.execute` / resolver 반환 타입 `Any` → `SolveResult` 정리
+- [ ] RF-P2-03: `boundary/contracts.py` re-export → import 경로 일원화 후 deprecate
+- [ ] RF-P2-04: `entity/user.py` 스캐폴드 정리 (Magic Square 범위 외)
+
+#### 레이어별 REFACTOR 준비도
+
+| 레이어 | REFACTOR | 비고 |
+|---|---|---|
+| `src/entity/*` | **가능** | `test_d_*` + Golden Master |
+| `src/control/*` | **가능** | boundary/Golden Master 간접 보호; P1-01 권장 |
+| `src/boundary/*` (core) | **가능** | `test_u_*`, `test_ac_fr_*`, presenter |
+| `src/boundary/screen/*` | **P1 후** | smoke만 있음; P1-05 전 동작 테스트 부족 |
+
+#### REFACTOR 회귀 명령
+
+```bash
+pytest tests/ -q --cov=src --cov-fail-under=80
+pytest -m golden_master -v
+pytest tests/test_architecture_imports.py -q
+```
 
 <!-- GitHub Task List: 저장소 README를 GitHub에서 열면 체크박스를 클릭해 [x]로 바꿀 수 있습니다. -->
 
@@ -352,11 +404,11 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 |---|---|
 | PRD | `docs/PRD_MagicSquare.md` v1.1 — DN-01~DN-03 resolved |
 | 개발 To-Do List | Turn 1 작성 완료 — **파일 미저장** (선택: `docs/TDD_Development_ToDo_List.md`) |
-| MagicSquare 구현 | **R0~R6 GREEN 완료** — Boundary FR-01 + Entity FR-02~05 + Control 통합 |
-| MagicSquare 테스트 | **62/62 PASS** — Dual-Track Full GREEN |
+| MagicSquare 구현 | **R0~R8 GREEN 완료** + ECB P0 (`contracts`, `ports`, `bootstrap`) |
+| MagicSquare 테스트 | **~76 PASS** — Dual-Track + Golden Master + architecture guard |
 | `docs/defect_list.md` | DEF-001~005 기록, Open 0건 |
-| `pyproject.toml` | **작성 완료** — pytest-cov gate (≥80%) |
-| 현재 단계 | **R8 완료** — DN-01~03 확정, PRD v1.1 |
+| `pyproject.toml` | pytest-cov gate (≥80%); GUI optional omit |
+| 현재 단계 | **REFACTOR** — Golden Master 구축 완료, P0 ECB·GUI 복원 완료 |
 
 ### GREEN 순서 (완료)
 
@@ -384,4 +436,4 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 ## 한 줄 결론
 
 이 프로젝트의 본질은 **정답 1개 산출**이 아니라, **불변식과 계약으로 설명 가능한 코드**를 Dual-Track TDD로 만드는 것이다.  
-**R0~R8 GREEN 완료** — Dual-Track 62 tests PASS, coverage gate ≥80%, PRD v1.1.
+**R0~R8 GREEN 완료** — Dual-Track PASS, Golden Master 회귀 안전장치, REFACTOR P0(ECB·GUI) 적용. 다음: P1 테스트 보강 후 구조 REFACTOR.

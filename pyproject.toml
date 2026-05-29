@@ -34,6 +34,13 @@ addopts = [
 [tool.coverage.run]
 source = ["src"]
 branch = true
+omit = [
+    # Optional PyQt6 GUI — covered by smoke tests when PyQt6 is installed.
+    "src/boundary/screen/app.py",
+    "src/boundary/screen/main_window.py",
+    "src/boundary/screen/grid_input_widget.py",
+    "src/boundary/screen/sample_puzzles.py",
+]
 
 [tool.coverage.report]
 fail_under = 80

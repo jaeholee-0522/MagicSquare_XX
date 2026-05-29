@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.boundary.contracts import ValidationErrorResponse
-from src.entity.constants import (
+from src.contracts.grid_constants import (
     BLANK_VALUE,
     GRID_SIZE,
     MAX_VALUE,
     MIN_VALUE,
     REQUIRED_BLANK_COUNT,
 )
+from src.contracts.validation_errors import ValidationErrorResponse
 
 
 class BoundaryValidator:

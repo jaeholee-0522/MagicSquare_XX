@@ -1,11 +1,10 @@
-"""Solve use case — validates at Boundary then delegates to Domain."""
+"""Solve use case — validates input then delegates to Domain."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from src.boundary.boundary_validator import BoundaryValidator
-from src.boundary.contracts import ValidationErrorResponse
+from src.control.ports import InputValidator, SolveResult
 from src.entity.domain_resolver import DomainResolver
 
 
@@ -14,15 +13,15 @@ class SolveUseCase:
 
     def __init__(
         self,
-        validator: BoundaryValidator,
+        validator: InputValidator,
         domain_resolver: DomainResolver,
     ) -> None:
-        """Wire Boundary validator and Domain resolver."""
+        """Wire input validator port and Domain resolver."""
         self._validator = validator
         self._domain_resolver = domain_resolver
 
-    def execute(self, grid: Any) -> ValidationErrorResponse | Any:
-        """Validate input; on SIZE failure return error without calling Domain.
+    def execute(self, grid: Any) -> SolveResult:
+        """Validate input; on Boundary failure return error without calling Domain.
 
         Args:
             grid: Raw matrix input from caller.
