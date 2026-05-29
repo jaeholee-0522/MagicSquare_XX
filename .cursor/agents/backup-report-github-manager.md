@@ -19,11 +19,11 @@ readonly: true
 
 ## 폴더 규칙
 - 보고서는 `Report/` 폴더에 저장
-- 프롬프트와 AI 응답 기록은 `Prompting/` 폴더에 저장
+- 프롬프트와 AI 응답 기록은 `Prompt/` 폴더에 저장
 
 ## 파일명 규칙
 - 보고서 파일: `Report/01_작업명_Report.md`
-- 프롬프트 기록 파일: `Prompting/01_작업명_Prompt.md`
+- 프롬프트 기록 파일: `Prompt/01_작업명_Prompt.md`
 - 번호는 `01`부터 시작하며 기존 파일이 있으면 다음 번호를 사용
 
 ## 보고서 작성 규칙
