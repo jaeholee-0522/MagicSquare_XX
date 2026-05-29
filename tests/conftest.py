@@ -30,12 +30,12 @@ G2: list[list[int]] = [
 ]
 G2_EXPECTED_SOLUTION: list[int] = [3, 3, 6, 4, 4, 1]
 
-# G3 — both Attempt 1/2 fail (DN-03 placeholder; verify at GREEN)
+# G3 — both Attempt 1/2 fail (DN-03 confirmed at R5 GREEN)
 G3: list[list[int]] = [
-    [0, 2, 3, 13],
-    [5, 11, 10, 8],
-    [9, 7, 6, 12],
-    [4, 14, 0, 1],
+    [0, 14, 15, 4],
+    [12, 6, 7, 9],
+    [8, 10, 11, 5],
+    [13, 3, 2, 0],
 ]
 
 # PRD §16.4 invalid blank count (one zero)
