@@ -1,6 +1,6 @@
 # Magic Square 4×4 — TDD Practice
 
-**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) · [ECB 레이어 분리](#ecb-레이어-분리-프롬프트--src-매핑) · [QA 코드 스멜 (Control/Boundary)](#p2--qa-코드-스멜-controlboundary) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
+**바로가기:** [RED 단계 To-Do 리스트](#red-단계-to-do-리스트) · [REFACTOR 단계 To-Do](#refactor-단계-to-do-리스트) · [REFACTOR 유형·우선순위](#refactor-유형별-분류--우선순위) · [ECB 레이어 분리](#ecb-레이어-분리-프롬프트--src-매핑) · [QA 코드 스멜 (Control/Boundary)](#p2--qa-코드-스멜-controlboundary) · [RED 커밋 배치 계획](#red-커밋-배치-계획-dual-track-full-red) · [RED Start Checklist](#7-red-start-checklist)
 
 ## 1. Project Start Declaration
 
@@ -346,6 +346,128 @@ pytest -m golden_master -v
 pytest tests/test_architecture_imports.py -q
 ```
 
+#### REFACTOR 유형별 분류 · 우선순위
+
+미완료 REFACTOR 항목을 **유형별**로 묶고, 실행 **우선순위** 순으로 정렬한다.  
+상세 분석: [`Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md`](Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md)
+
+##### 전체 우선순위 요약
+
+| 순위 | 단계 | 유형 | 핵심 목적 |
+|:---:|---|---|---|
+| 1 | **P1** | 테스트/회귀 보호 | REFACTOR 전 안전망 — ECB·Screen 분리 전 필수 |
+| 2 | **P2-H** | 계약·타입 강화 | E001~E005·int[6] 회귀 위험 제거 |
+| 3 | **ECB P0** | ECB 레이어 분리 | `DomainResolver` Control 이전 + Screen↔Presenter 경계 |
+| 4 | **P2** | 구조 개선 | 타입·import·dead scaffold 정리 |
+| 5 | **P2-M** | DRY·SSOT·가독성 | 중복 제거, composition root, 함수 분리 |
+| 6 | **P2-L** | 스타일·Dead code | 미사용 코드·명명 개선 |
+| 7 | *(부가)* | 품질 게이트 | 커버리지 목표 (RED 체크리스트 잔여) |
+
+> **P0 (RF-P0-01~09)** · Golden Master(GM-01~10) **완료**.
+
+##### 1. 테스트 / 회귀 보호 (P1 — 최우선)
+
+*테스트 없이 ECB 분리 금지* — 구조 리팩토링 **전** 반드시 선행.
+
+| # | ID | 항목 |
+|---|---|---|
+| 1 | RF-P1-01 | `tests/control/test_solve_use_case.py` — mock validator/resolver 단위 테스트 |
+| 2 | RF-P1-02 | Boundary 비정수 셀 검증 (`"5"`, `1.5` → `INVALID_RANGE`, TypeError 방지) |
+| 3 | RF-P1-03 | 입력 grid 불변성 테스트 (PRD NFR-04 — execute 전후 deep equality) |
+| 4 | RF-P1-04 | Golden Master — `INVALID_SIZE`, `INVALID_RANGE` 시나리오 추가 |
+| 5 | RF-P1-05 | GUI headless 동작 테스트 (Solve/Clear/샘플/오류 표시) |
+| 6 | RF-P1-06 | `integrated_solve_use_case` fixture 중복 제거 (`conftest.py` SSOT) |
+
+**ECB P1 매핑** (P1과 1:1 연동, 동일 우선순위):
+
+| ECB ID | 연결 P1 | 내용 |
+|---|---|---|
+| RF-ECB-P1-01 | RF-P1-01 | Control `SolveUseCase` mock 단위 테스트 |
+| RF-ECB-P1-02 | RF-P1-02 | Boundary 비정수 → `INVALID_RANGE` |
+| RF-ECB-P1-03 | RF-P1-04 | Golden Master 오류 시나리오 |
+| RF-ECB-P1-04 | RF-P1-03 | grid 불변성 (NFR-04) |
+| RF-ECB-P1-05 | RF-P1-05 | GUI headless 동작 |
+| RF-ECB-P1-06 | RF-P2-H01~H03 | int[6]·GridInputWidget 스키마 가드 (P2-H 연계) |
+
+##### 2. 계약·타입 강화 (P2-H — QA High)
+
+`src/boundary/screen/*`는 smoke만 있음 — **P2-H 선행 권장** (§레이어별 REFACTOR 준비도).
+
+| # | ID | 항목 | 대상 |
+|---|---|---|---|
+| 1 | RF-P2-H01 | `SolvePresenter` 성공 분기 int[6] 검증 (length=6, coords∈[1,4]) | U-OUT Boundary enforcement |
+| 2 | RF-P2-H02 | `GridInputWidget.set_grid` — `GRID_SIZE` 검증 | UI 입력 가드 |
+| 3 | RF-P2-H03 | `apply_solution` / `highlight_placements` — malformed int[6] UI 오류 | UI 출력 가드 |
+| 4 | RF-P2-H04 | `SolveUseCase.execute` — `grid: Any` → `list[list[int]]` | FR-01 입력 계약 복원 |
+
+##### 3. ECB 레이어 분리 (ECB P0 — 구조 1순위)
+
+**REFACTOR 1순위:** E001~E007·int[6] 유지 — `DomainResolver` Control 이전 + Screen↔UIBoundary(`solve_presenter`) 경계 정리.
+
+| # | ID | 항목 |
+|---|---|---|
+| 1 | RF-ECB-P0-01 | `entity/domain_resolver.py` → `src/control/` (`DomainResolverImpl` + Protocol → `ports.py`) |
+| 2 | RF-ECB-P0-02 | `main_window` E006/E007 — 오류 타이틀·색·`QMessageBox` → `solve_presenter` 또는 Boundary UI mapper |
+| 3 | RF-ECB-P0-03 | `main_window` — `bootstrap`/`SAMPLE_PUZZLES` 제거, `app.py` 단일 composition·Presenter 주입 |
+
+> RF-ECB-P0-03 ↔ RF-P2-M03 동일 방향(composition root).
+
+##### 4. 구조 개선 (P2)
+
+| # | ID | 항목 |
+|---|---|---|
+| 1 | RF-P2-02 | `SolveUseCase.execute` / resolver 반환 `Any` → `SolveResult` *(H04 연계)* |
+| 2 | RF-P2-01 / RF-P2-M06 | `DomainResolver` Protocol → `control/ports.py` *(ECB-P0-01 연계)* |
+| 3 | RF-P2-03 | `boundary/contracts.py` re-export → import 경로 일원화 후 deprecate |
+| 4 | RF-P2-04 | `entity/user.py` 스캐폴드 정리 (Magic Square 범위 외) |
+
+##### 5. DRY · SSOT · 가독성 (P2-M)
+
+| # | ID | 항목 |
+|---|---|---|
+| 1 | RF-P2-M01 | int[6] 언팩·1-index 변환 단일 helper (`SOLUTION_LENGTH=6` SSOT) |
+| 2 | RF-P2-M02 | `BoundaryValidator` — 3회 full-grid 순회 → 단일 순회 |
+| 3 | RF-P2-M03 | Screen→`bootstrap` 직접 import 제거 — `app.py` composition root |
+| 4 | RF-P2-M04 | `main_window` 힌트 `"1–16"` → `MIN_VALUE`/`MAX_VALUE` SSOT |
+| 5 | RF-P2-M05 | `main_window._build_ui` / `_show_error`, `grid_input_widget._build_ui` 분리 (≤20줄) |
+| 6 | RF-P2-M07 | `validation_errors` 메시지 ↔ `grid_constants` 문자열 SSOT 연동 |
+
+##### 6. 스타일 · Dead code (P2-L)
+
+| # | ID | 항목 |
+|---|---|---|
+| 1 | RF-P2-L01 | 미사용 `_ERROR_STYLE` / `highlight_placements(is_error=True)` 제거 또는 domain-error 연결 |
+| 2 | RF-P2-L02 | `SolveResult` union type alias 명명 개선 |
+
+##### 7. 품질 게이트 (부가 — RED 체크리스트 잔여)
+
+| # | 항목 | 목표 |
+|---|---|---|
+| 1 | Domain Logic coverage | 95%+ |
+| 2 | Boundary Layer coverage | 85%+ |
+| 3 | 전체 TOTAL coverage | 90%+ |
+
+##### 권장 실행 Wave
+
+| Wave | 범위 | 항목 |
+|:---:|---|---|
+| **1** | 안전망 | RF-P1-01~06 전체 |
+| **2** | 계약 | RF-P2-H01~H04 (+ RF-ECB-P1-06 연계 테스트) |
+| **3** | 아키텍처 | RF-ECB-P0-01~03 |
+| **4** | 정리 | RF-P2-01~04 → RF-P2-M01~M07 → RF-P2-L01~L02 |
+
+##### QA 코드 스멜 ↔ REFACTOR 매핑
+
+| 파일 | 스멜 | 대응 REFACTOR |
+|---|---|---|
+| `solve_presenter.py` 71–74 | int[6] 미검증 | **RF-P2-H01** |
+| `grid_input_widget.py` 83–88, 117–126 | set_grid/apply_solution 미검증 | **RF-P2-H02, H03** |
+| `main_window.py` 135–136 | int[6] 3중 소비·미검증 | **RF-P2-H01, M01** |
+| `solve_use_case.py` 23, 32 | `grid: Any` | **RF-P2-H04, P2-02** |
+| `boundary_validator.py` 57–86 | 3회 순회 | **RF-P2-M02** |
+| `main_window.py` 47–100, 148–177 | 장함수 | **RF-P2-M05** |
+| `entity/solver.py` (참조) | int[6] Boundary 중복 | **RF-P2-M01** |
+
 <!-- GitHub Task List: 저장소 README를 GitHub에서 열면 체크박스를 클릭해 [x]로 바꿀 수 있습니다. -->
 
 이 체크리스트는 [`docs/test_plan.md`](docs/test_plan.md) · Report/10 기반입니다. **RED**(실패 테스트 작성) 완료 시 항목을 체크합니다.
@@ -454,6 +576,7 @@ pytest tests/boundary/ tests/entity/ -q
 | Golden Master GM-1~GM-3 | [`Report/13.MagicSquare_Golden_Master_GM1_GM3_Report.md`](Report/13.MagicSquare_Golden_Master_GM1_GM3_Report.md) | Golden Master baseline·approve·회귀 보호 |
 | REFACTOR P0 ECB·QA | [`Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md`](Report/14.MagicSquare_REFACTOR_P0_ECB_QA_Report.md) | contracts·bootstrap·QA 스멜·ECB 매핑 README |
 | QA Control/Boundary 스멜 | [`Report/15.MagicSquare_QA_Control_Boundary_Smell_Report.md`](Report/15.MagicSquare_QA_Control_Boundary_Smell_Report.md) | quality-assurance-engineer 점검·P2-H/M/L·회귀 버그 |
+| REFACTOR 유형·우선순위 | [`Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md`](Report/16.MagicSquare_REFACTOR_Classification_Priority_Report.md) | 미완료 REFACTOR 7유형·Wave 1~4·QA 매핑 |
 | AC-FR-01-01 단일 GREEN 검증 | [`Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md`](Report/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Verification_Report.md) | 단일 pytest GREEN 검증 |
 | 결함 목록 | [`docs/defect_list.md`](docs/defect_list.md) | DEF-001~005 (Resolved) |
 | Cursor Rules | [`.cursor/rules/`](.cursor/rules/) | Quality Gates, ECB, TDD, forbidden |
@@ -464,6 +587,7 @@ pytest tests/boundary/ tests/entity/ -q
 | Transcript (Golden Master GM-1~GM-3) | [`Prompt/13.MagicSquare_Golden_Master_GM1_GM3_Transcript.md`](Prompt/13.MagicSquare_Golden_Master_GM1_GM3_Transcript.md) | Golden Master baseline·테스트·README 세션 |
 | Transcript (REFACTOR P0 ECB·QA) | [`Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md`](Prompt/14.MagicSquare_REFACTOR_P0_ECB_QA_Transcript.md) | ECB P0·code-review·QA·ECB README 세션 |
 | Transcript (QA Control/Boundary) | [`Prompt/15.MagicSquare_QA_Control_Boundary_Smell_Transcript.md`](Prompt/15.MagicSquare_QA_Control_Boundary_Smell_Transcript.md) | QA engineer 스멜 점검·README P2·Export 세션 |
+| Transcript (REFACTOR 유형·우선순위) | [`Prompt/16.MagicSquare_REFACTOR_Classification_Priority_Transcript.md`](Prompt/16.MagicSquare_REFACTOR_Classification_Priority_Transcript.md) | REFACTOR 분류·README·Report·Export 세션 |
 | Transcript (AC-FR-01-01 단일 GREEN) | [`Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md`](Prompt/11.MagicSquare_AC_FR_01_01_Single_Test_GREEN_Transcript.md) | 단일 pytest GREEN 검증 세션 |
 
 ### 문서 간 관계
