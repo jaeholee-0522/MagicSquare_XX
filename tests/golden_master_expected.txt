@@ -1,0 +1,44 @@
+[normal_success]
+Input:
+0 15 14 4
+12 6 7 9
+8 10 11 5
+13 3 2 0
+Output:
+[1, 1, 1, 4, 4, 16]
+________________________________________
+[reverse_success]
+Input:
+16 2 3 13
+5 11 10 8
+9 7 0 12
+4 14 15 0
+Output:
+[3, 3, 6, 4, 4, 1]
+________________________________________
+[invalid_blank_count]
+Input:
+16 2 3 13
+5 11 10 8
+9 7 6 12
+4 14 15 0
+Error:
+INVALID_BLANK_COUNT
+________________________________________
+[duplicate_number]
+Input:
+16 2 3 13
+5 5 10 8
+9 7 6 12
+4 14 0 0
+Error:
+INVALID_DUPLICATE
+________________________________________
+[no_valid_solution]
+Input:
+0 14 15 4
+12 6 7 9
+8 10 11 5
+13 3 2 0
+Error:
+DOMAIN-ERR-NO_VALID_PLACEMENT

@@ -4,6 +4,35 @@ from __future__ import annotations
 
 import pytest
 
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register CLI flags shared across test modules."""
+    parser.addoption(
+        "--approve-golden-master",
+        action="store_true",
+        default=False,
+        help="Overwrite tests/golden_master_expected.txt with current solver output.",
+    )
+
+
+@pytest.fixture
+def approve_golden_master(request: pytest.FixtureRequest) -> bool:
+    """Whether this run should approve Golden Master baseline changes."""
+    return bool(request.config.getoption("--approve-golden-master"))
+
+
+@pytest.fixture
+def integrated_solve_use_case():
+    """Control orchestrator with real Boundary and Domain pipeline."""
+    from src.boundary.boundary_validator import BoundaryValidator
+    from src.control.solve_use_case import SolveUseCase
+    from src.entity.domain_resolver import DomainResolverImpl
+
+    return SolveUseCase(
+        validator=BoundaryValidator(),
+        domain_resolver=DomainResolverImpl(),
+    )
+
 # G0 — complete 4x4 magic square (all rows/cols/diags sum 34, no zeros)
 G0: list[list[int]] = [
     [16, 3, 2, 13],
