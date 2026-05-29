@@ -6,6 +6,7 @@ import sys
 
 from PyQt6.QtWidgets import QApplication
 
+from src.bootstrap import build_solve_presenter
 from src.boundary.screen.main_window import MainWindow
 
 
@@ -18,7 +19,7 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName("Magic Square 4x4")
     app.setOrganizationName("MagicSquare")
-    window = MainWindow()
+    window = MainWindow(presenter=build_solve_presenter())
     window.show()
     return app.exec()
 

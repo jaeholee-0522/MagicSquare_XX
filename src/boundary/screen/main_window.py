@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from src.bootstrap import build_solve_presenter
 from src.boundary.screen.grid_input_widget import GridInputWidget
 from src.boundary.screen.sample_puzzles import SAMPLE_PUZZLES
 from src.boundary.screen.solve_presenter import (
@@ -23,7 +24,7 @@ from src.boundary.screen.solve_presenter import (
     SolveResultKind,
     SuccessOutcome,
 )
-from src.entity.constants import MAGIC_CONSTANT, REQUIRED_BLANK_COUNT
+from src.contracts.grid_constants import MAGIC_CONSTANT, REQUIRED_BLANK_COUNT
 
 
 class MainWindow(QMainWindow):
@@ -32,7 +33,7 @@ class MainWindow(QMainWindow):
     def __init__(self, presenter: SolvePresenter | None = None) -> None:
         """Initialize window with optional presenter injection."""
         super().__init__()
-        self._presenter = presenter or SolvePresenter()
+        self._presenter = presenter or build_solve_presenter()
         self._grid = GridInputWidget()
         self._result_label = QLabel()
         self._result_label.setWordWrap(True)
