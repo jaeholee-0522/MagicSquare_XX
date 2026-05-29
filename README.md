@@ -325,11 +325,11 @@ src/ + tests/  ←── RED → GREEN → REFACTOR
 |---|---|
 | PRD | `docs/PRD_MagicSquare.md` v1.0 Draft — Implementation-Ready |
 | 개발 To-Do List | Turn 1 작성 완료 — **파일 미저장** (선택: `docs/TDD_Development_ToDo_List.md`) |
-| MagicSquare 구현 | **진행 중** — R0~R1 GREEN; **R2 RANGE GREEN**; R3~R6 GREEN 대기 |
+| MagicSquare 구현 | **진행 중** — R0~R2 GREEN; **R3 DUPLICATE GREEN**; R4~R6 GREEN 대기 |
 | MagicSquare 테스트 | **RED 완료** — 62 collected (R0 GREEN 30 + Full RED 25 failed + sample 7) |
 | `docs/defect_list.md` | DEF-001~005 기록, Open 0건 |
 | `pyproject.toml` | **미작성** — GREEN 단계 coverage gate 추가 예정 |
-| 현재 단계 | **R2 GREEN 완료 → R3 DUPLICATE 분기** |
+| 현재 단계 | **R3 GREEN 완료 → R4 Entity FR-02~04** |
 
 ### 권장 GREEN 순서
 

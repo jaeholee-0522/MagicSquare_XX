@@ -35,6 +35,8 @@ class BoundaryValidator:
             return ValidationErrorResponse.invalid_range()
         if self._is_blank_count_invalid(grid):
             return ValidationErrorResponse.invalid_blank_count()
+        if self._is_duplicate_invalid(grid):
+            return ValidationErrorResponse.invalid_duplicate()
         return None
 
     def _is_size_invalid(self, grid: Any) -> bool:
@@ -70,3 +72,15 @@ class BoundaryValidator:
                 if value == BLANK_VALUE:
                     blank_count += 1
         return blank_count != REQUIRED_BLANK_COUNT
+
+    def _is_duplicate_invalid(self, grid: list) -> bool:
+        """Return True when any non-zero value appears more than once."""
+        seen: set[int] = set()
+        for row in grid:
+            for value in row:
+                if value == BLANK_VALUE:
+                    continue
+                if value in seen:
+                    return True
+                seen.add(value)
+        return False

@@ -62,12 +62,12 @@ RANGE_SEVENTEEN_GRID: list[list[int]] = [
     [4, 14, 15, 0],
 ]
 
-# PRD §16.4 duplicate non-zero
+# PRD §16.4 duplicate non-zero (two blanks so ZERO passes before DUPLICATE)
 DUPLICATE_GRID: list[list[int]] = [
     [16, 2, 3, 13],
     [5, 5, 10, 8],
     [9, 7, 6, 12],
-    [4, 14, 15, 1],
+    [4, 14, 0, 0],
 ]
 
 # Valid 4x4 with one out-of-range value (-1)
